@@ -8,4 +8,4 @@
   - this include the userful tool in my daily work
 - [db_tools](./db_tools)
   - this include the simple tools when i work as a database kernel developer
-    [gen_csv](.db_tools/gen_csv) : a simple tool for generate csv file.
+    [gen_csv](./db_tools/gen_csv) : a simple tool for generate csv file.
