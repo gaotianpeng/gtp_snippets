@@ -10,11 +10,11 @@ std::string GenRandomString( size_t len ) {
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 "abcdefghijklmnopqrstuvwxyz";
         const size_t max_index = (sizeof(charset) - 1);
-        return charset[ rand() % max_index ];
+        return charset[rand() % max_index ];
     };
 
-    std::string ret_str(len,0);
-    std::generate_n( ret_str.begin(), len, rand_char );
+    std::string ret_str(len, 0);
+    std::generate_n(ret_str.begin(), len, rand_char);
     return ret_str;
 }
 
