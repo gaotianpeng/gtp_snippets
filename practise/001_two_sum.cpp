@@ -1,37 +1,30 @@
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 using namespace std;
 
 /*
 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标
 */
 class Solution {
- public:
+public:
     vector<int> twoSum(vector<int>& nums, int target) {
-      if (nums.size() == 0 || nums.size() == 1) {
-          return vector<int>();
-      }
+        if (nums.size() == 0 || nums.size() == 1) {
+            return {};
+        }
 
-      std::map<int, int> val_loc_mapper;
-      size_t n_elem = nums.size();
-      for (int i = 0; i < n_elem; ++i) {
-          val_loc_mapper.insert(std::pair<int, int>(nums.at(i), i));
-      }
+        std::unordered_map<int, int> val_loc_mapper;
+        size_t n_elem = nums.size();
+        for (int i = 0; i < n_elem; ++i) {
+            auto it = val_loc_mapper.find(target - nums[i]);
+            if (it != val_loc_mapper.end()) {
+                return {i, it->second};
+            }
 
-      for (int i = 0; i < n_elem; ++i) {
-          auto iter = val_loc_mapper.find(target - nums[i]);
-          if (iter != val_loc_mapper.end()) {
-              if (iter->second != i) {
-                  if (iter->second < i) {
-                      return vector<int>{iter->second, i};
-                  }
-                  return vector<int>{i, iter->second};
-              }
-          }
-      }
+            val_loc_mapper[nums[i]] = i;
+        }
 
-      return vector<int>();
+        return {};
     }
 };
 
