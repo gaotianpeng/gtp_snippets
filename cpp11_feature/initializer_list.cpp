@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     /*
      * 窄化(narrowing):精度降低或造成数值变动对大括号而言是不可成立的
      */
-    int x1(5.3);    // ok
+    int x1(5.3);    // okss
     int x2 = 5.3;   // ok
     int x3{5.3};    // error: narrowing
     int x4 = {5.3}; // error: narrowing
