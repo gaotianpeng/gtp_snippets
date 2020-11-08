@@ -104,57 +104,57 @@ exception:
 */
 template <typename T>
 void ProcessCodeException(const T& e) {
-	auto c = e.code();
-	cerr << "- category:		" << c.category().name() << endl;
-	cerr << "- value:			" << c.value() << endl;
-	cerr << "- def category:	" << c.default_error_condition().category().name() << endl;
-	cerr << "- def value:		" << c.default_error_condition().value() << endl;
+    auto c = e.code();
+    cerr << "- category:        " << c.category().name() << endl;
+    cerr << "- value:           " << c.value() << endl;
+    cerr << "- def category:    " << c.default_error_condition().category().name() << endl;
+    cerr << "- def value:       " << c.default_error_condition().value() << endl;
 }
 
 void ProcessException() {
-	try {
-		throw std::system_error(std::make_error_code(std::errc::invalid_argument), "argument ... is not valid");
-	}
-	catch (const ios_base::failure& e) {
-		cerr << "I/O EXCEPTION: " << e.what() << endl;
-		ProcessCodeException(e);
-	}
-	catch (const system_error& e) {
-		cerr << "SYSTEM EXCEPTION: " << e.what() << endl;
-		ProcessCodeException(e);
-	}
-	catch (const future_error& e) {
-		cerr << "FUTURE EXCEPTION: " << e.what() << endl;
-		ProcessCodeException(e);
-	}
-	catch (...) {
-		cerr << "EXCEPTION (unknow)" << endl;
-	}
+    try {
+        throw std::system_error(std::make_error_code(std::errc::invalid_argument), "argument ... is not valid");
+    }
+    catch (const ios_base::failure& e) {
+        cerr << "I/O EXCEPTION: " << e.what() << endl;
+        ProcessCodeException(e);
+    }
+    catch (const system_error& e) {
+        cerr << "SYSTEM EXCEPTION: " << e.what() << endl;
+        ProcessCodeException(e);
+    }
+    catch (const future_error& e) {
+        cerr << "FUTURE EXCEPTION: " << e.what() << endl;
+        ProcessCodeException(e);
+    }
+    catch (...) {
+        cerr << "EXCEPTION (unknow)" << endl;
+    }
 }
 
 /*
 以 class exception_ptr 传递异常
-	将异常存储于类型为exception_ptr的对象中，稍后才在其他情境（context）中处理
+    将异常存储于类型为exception_ptr的对象中，稍后才在其他情境（context）中处理
 */
 
 std::exception_ptr eptr;	// object to hold exceptions
 void foo() {
-	try {
-		throw std::out_of_range("out_of_range (somewhere, somehow)");
-	}
-	catch (...) {
-		eptr = std::current_exception();
-	}
+    try {
+        throw std::out_of_range("out_of_range (somewhere, somehow)");
+    }
+    catch (...) {
+        eptr = std::current_exception();
+    }
 }
 
 void bar() {
-	if (eptr != nullptr) {
-		std::rethrow_exception(eptr);
-	}
+    if (eptr != nullptr) {
+        std::rethrow_exception(eptr);
+    }
 }
 
 int main(int argc, char* argv[]) {
-	ProcessException();
-	bar();
- 	return 0;
+    ProcessException();
+    bar();
+    return 0;
 }
