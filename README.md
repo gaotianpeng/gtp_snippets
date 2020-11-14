@@ -1,5 +1,6 @@
 **This project inlcude the code snippets that i used in my daily work. Maybe it is useful for you.**
-
+- [cpp_basic](./cpp_basic)
+  - include the cpp kernal concept and example code
 - [cpp11_feature](./cpp11_feature)
   - this include the new feature of c++11. 
 - [cpp11_std](./cpp11_std)
