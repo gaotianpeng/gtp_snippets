@@ -29,3 +29,5 @@ C++语言中，异常处理包括
 # 5 函数
 
 # 6 类
+# 7 其它
+# [8. 对象模型](./object_model/object_model.md)

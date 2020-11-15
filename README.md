@@ -2,7 +2,7 @@
 - [boost_eg](./boost_eg)
   - include boost example
 - [cpp_basic](./cpp_basic)
-  - include the cpp kernal concept and example code
+  - [include the cpp kernal concept and example code](./cpp_basic/cpp_basic.md)
 - [cpp11_feature](./cpp11_feature)
   - this include the new feature of c++11. 
 - [cpp11_std](./cpp11_std)
