@@ -26,5 +26,29 @@ STL的基本观念就是将数据和操作分离。数据由容器类加以管�
 
 ![STL的容器种类](res\STL的容器种类.png)
 
+## 2.1 顺序容器
+
+sequence container: 一种有序(ordered)集合，其中每个元素均有确凿的位置(取决于插入时机和位置，与元素值无关)
+
+array、vector、deque、list、forward_list
+
+通常被实现为 array或 linked list
+
+## 2.2 关联式容器
+
+associative container: 已排序(sorted)集合，元素位置取决于其value或key和给定的某个排序准则
+
+set、multiset、map、multimap
+
+通常被实现为 binary tree
+
+## 2.3 无序容器
+
+unordered container：一种无序列集合(unordered collection)，元素的位置无关紧要，唯一重要的是某特定元素是否位于此集合内
+
+unordered_set、unordered_multiset、unordered_map、unordered_multimap
+
+通常被实现为hash table
+
 
 
