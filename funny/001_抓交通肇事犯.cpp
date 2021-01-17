@@ -4,7 +4,24 @@
     乙说：牌照的后两位数字是相同的，但与前两位不同
     丙是数学家，他说：4位的车号刚好是一个整数的平方
 */
+#include <iostream> 
+using namespace std;
 
 int GetCarNum() {
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            int k = 1000 * i + 100 * i + 10 * j + j;
+            for (int temp = 31; temp < 100; ++temp) {
+                if (temp * temp == k) {
+                    return k;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+int main(int argc, char* argv[]) {
+    cout << "车牌号为:" << GetCarNum() << endl;
     return 0;
 }
