@@ -21,15 +21,16 @@ class ThreadPool {
   void AddTask(Task&& task);
   void AddTask(const Task& task);
 
+
  private:
   void RunInThead();
   void StopThreadGroup();
 
  private:
-  std::list<std::shared_ptr<std::thread>> m_thread_grouop;  // 处理任务的线程组
-  SyncQueue<Task> m_queue;      // 同步队列
-  std::atomic_bool m_running;   // 是否停止的标志
-  std::once_flag m_flag;
+  std::list<std::shared_ptr<std::thread>> thread_grouop_;  // 处理任务的线程组
+  SyncQueue<Task> queue_;      // 同步队列
+  std::atomic_bool running_;   // 是否停止的标志
+  std::once_flag flag_;
 };
 
 #endif //CPP_TEST__THREAD_POOL_H_

@@ -5,12 +5,11 @@ using namespace std;
 void TestThreadPool() {
   ThreadPool pool;
   pool.Start(2);
-
   std::thread th1([&pool] {
     for (int i = 0; i < 10; i++) {
       auto th_id = this_thread::get_id();
       pool.AddTask([th_id] {
-        cout << "同步层线程1的线程ID:" << th_id << endl;
+        cout << "同步层线程1的线程ID: " << th_id << endl;
       });
     }
   });
