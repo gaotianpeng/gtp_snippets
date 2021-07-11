@@ -15,6 +15,7 @@ public:
 class Command {
 public:
     virtual void execute() = 0;
+    virtual void undo() = 0;
 
 protected:
     Command() {}
@@ -28,8 +29,34 @@ public:
         light_->on();
     }
 
+    void undo() {
+        light_->off();
+    }
+
 private:
     Light* light_;
+};
+
+class LightOffCommand: public Command {
+public:
+    LightOffCommand(Light* light):light_(light) {}
+
+    void execute() {
+        light_->off();
+    }
+
+    void undo() {
+        light_->on();
+    }
+
+private:
+    Light* light_;
+};
+
+class NoCommand: public Command {
+public:
+    virtual void execute() {}
+    virtual void undo() {}
 };
 
 class SimpleRemoteControl {
@@ -38,12 +65,23 @@ public:
         command_ = cmd;
     }
 
-    void buttonPressed() {
+    void onButtonWasPressed() {
         command_->execute();
+        undo_cmd_ = command_;
+    }
+
+    void offButtonWasPressed() {
+        command_->execute();
+        undo_cmd_ = command_;
+    }
+
+    void undoButtonWasPushed() {
+        undo_cmd_->undo();
     }
 
 private:
     Command* command_;
+    Command* undo_cmd_;
 };
 
 int main(int argc, char* argv[]) {
@@ -52,7 +90,10 @@ int main(int argc, char* argv[]) {
     LightOnCommand cmd(&light);
 
     control.setCommand(&cmd);
-    control.buttonPressed();
+    control.onButtonWasPressed();
+    control.undoButtonWasPushed();
+    control.offButtonWasPressed();
+    control.undoButtonWasPushed();
 
     return 0;
 }
