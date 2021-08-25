@@ -14,70 +14,72 @@
  *  3）某个线程满足条件执行完之后调用notify_one或notify_all唤醒一个或者所有等待线程
  */
 
-template <typename T>
+#include <thread>
+#include <iostream>
+#include <list>
+#include <condition_variable>
+#include <mutex>
+
+template<typename T>
 class SyncQueue {
 public:
     SyncQueue(int max_size): max_size_(max_size) {}
 
-void Put(const T& x) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    while (IsFull()) {
-    std::cout << "缓冲区满了，需要等待..." << std::endl;
-    not_full_.wait(mutex_);
+public:
+    bool IsEmpty() {
+        std::lock_guard<std::mutex> guard(mutex_);
+        return queue_.empty();
     }
 
-    queue_.push_back(x);
-    not_full_.notify_one();
-}
-
-void Take(T& x) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    while (IsEmpty()) {
-        std::cout << "缓冲区空了，需要等待..." << std::endl;
-        not_empty_.wait(mutex_);
+    bool IsFull() {
+        std::lock_guard<std::mutex> guard(mutex_);
+        return queue_.size() == max_size_;
     }
 
-    x = queue_.front();
-    queue_.pop_front();
-    not_full_.notify_one();
-}
+    void Put(const T& elem) {
+        std::lock_guard<std::mutex> guard(mutex_);
+        while (IsFull_()) {
+            std::cout << "the queue is full, failed to add an elem." << std::endl;
+            not_full_.wait(mutex_);
+        }
 
-bool Empty() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return queue_.empty();
-}
+        queue_.push_back(elem);
+        not_empty_.notify_one();
+    }
 
-bool Full() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return queue_.size() == max_size_;
-}
+    void Get(T& elem) {
+        std::lock_guard<std::mutex> guard(mutex_);
+        while (IsEmpty_()) {
+            std::cout << "the queue is empty, failed to get an elem." << std::endl;
+            not_empty_.wait(mutex_);
+        }
 
-size_t Size() const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return queue_.size_;
-}
+        elem = queue_.front();
+        queue_.pop_front();
+        not_full_.notify_one();
+    }
 
-int Count() const {
-    return queue_.size();
-}
-
-private:
-bool IsFull() const {
-    return queue_.size() == max_size_;
-}
-
-bool IsEmpty() const {
-    return queue_.empty();
-}
+    int Size() {
+        std::lock_guard<std::mutex> guard(mutex_);
+        return queue_.size();
+    }
 
 private:
-    std::list<T> queue_;    // 缓冲区
-    std::mutex mutex_;      // 互斥量和条件变量结合起来使用
-    std::condition_variable_any not_empty_; // 不为空的条件亦是
-    std::condition_variable_any not_full_;  // 没有满的条件变量
-    int max_size_;          // 同步队列最大的size
+    bool IsEmpty_() {
+        return queue_.empty();
+    }
+
+    bool IsFull_() {
+        return queue_.size() == max_size_;
+    }
+
+private:
+    std::list<T> queue_;
+    int max_size_;
+    std::mutex mutex_;
+    std::condition_variable_any not_empty_;
+    std::condition_variable_any not_full_;
 };
-
 
 SyncQueue<int> sync_queue(5);
 
@@ -90,7 +92,7 @@ void PutDatas() {
 void TakeDatas() {
     int x = 0;
     for (int i = 0; i < 20; ++i) {
-        sync_queue.Take(x);
+        sync_queue.Get(x);
         std::cout << x << std::endl;
     }
 }
@@ -101,7 +103,6 @@ int main(int argc, char* argv[]) {
 
     th1.join();
     th2.join();
-    system("pause");
 
     return 0;
 }
