@@ -1,3 +1,7 @@
+/*
+    专用Rational内存管理器
+*/
+
 #include <iostream>
 using namespace std;
 

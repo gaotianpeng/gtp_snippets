@@ -1,5 +1,4 @@
 #include <iostream>
-#include <functional>
 #include <chrono>
 using namespace std;
 
