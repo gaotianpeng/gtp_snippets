@@ -16,6 +16,12 @@ void error_handling(char* message) {
     3）listen     -> 连接电话线
     4）accet      -> 接电话
 */
+
+/*
+    Usage 
+    1) gcc 01_hello_world_server.c -o server
+    2) ./server 2000
+*/
 int main(int argc, char* argv[]) {
     int serv_sock;
     int client_sock;
