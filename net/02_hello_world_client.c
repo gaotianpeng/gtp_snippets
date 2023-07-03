@@ -18,7 +18,7 @@ void error_handling(char* message) {
 */
 int main(int argc, char* argv[]) {
     int sock;
-    sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr;
     char message[30];
     int str_len;
 
