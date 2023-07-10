@@ -4,6 +4,9 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+/*
+    wait 会引起程序阻塞
+*/
 int main(int argc, char* argv[]) {
     int status;
     pid_t pid = fork();
