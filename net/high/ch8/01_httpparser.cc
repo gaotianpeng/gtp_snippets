@@ -228,7 +228,7 @@ int main(int argc, char* argv[]) {
             if(result == NO_REQUEST) { // 尚未得到一个完整的HTTP请求
                 continue;
             }
-            else if (result == GET_REQUEST) { // 得到一个完整的、正确的 HTTP请求
+            else if (result == GET_REQUEST) { // 得到一个完整的、正确的HTTP请求
                 send(fd, szret[0], strlen(szret[0]), 0);
                 break;
             }
