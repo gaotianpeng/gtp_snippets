@@ -45,7 +45,7 @@ void read_data(int sockfd) {
 
         time++;
         fprintf(stdout, "1K read for %d \n", time);
-        usleep(20000);
+        usleep(200000);
     }
 
 }
