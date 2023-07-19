@@ -49,6 +49,10 @@ int main(int argc, char* argv[]) {
     struct sockaddr* reply_addr;
     reply_addr = (sockaddr*)malloc(serv_len);
 
+    // if (connect(sockfd, (struct sockaddr *) &serv_addr, serv_len)) {
+    //     error(1, errno, "connect failed");
+    // }
+
     char send_line[MAXLINE], recv_line[MAXLINE + 1];
     socklen_t len;
     int n;
