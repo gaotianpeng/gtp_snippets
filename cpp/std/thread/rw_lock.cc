@@ -100,6 +100,6 @@ void Test() {
 int main(int argc, char* argv[]) {
     std::cout << "test start ...." << std::endl;
     Test();
-    std::cout << "test end" << std::endl;    
+    std::cout << "test end" << std::endl;
     return 0;
 }
