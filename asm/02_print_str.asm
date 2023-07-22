@@ -16,6 +16,7 @@ jmp loop_print
 string:
     db 'I miss you!'
 
+; cx 存放循环次数,每次循环判断cx = cx - 1,如果cx==0 终止循环
 loop_print:
     mov byte al,[string + si]
     mov byte [es:di], al
