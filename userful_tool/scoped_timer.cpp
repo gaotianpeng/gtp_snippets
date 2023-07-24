@@ -17,6 +17,8 @@ private:
     std::string msg_;
 };
 
+
+
 int main(int argc, char* argv[]) {
     int N = 100000000;
     long double sum = 0;
