@@ -11,8 +11,6 @@
 #include "shared_mutex.h"
 
 #define	N_BUCKETS	4
-
-
 #define R_SLEEP_TIME 100
 #define W_SLEEP_TIME 300
 

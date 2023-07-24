@@ -76,6 +76,7 @@ public:
         }
     }
 
+private:
     /*
         Purpose of this structure is to hold status fo each individual bucket-mutex object.
         Ideally each thread should be mapped to one entry only of 'el_' during its lifetime
