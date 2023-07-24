@@ -2,112 +2,77 @@
 #include <list>
 #include <mutex>
 #include <functional>
-#include <sys/time.h>
-#include <sys/resource.h>
+#include <random>
+#include <vector>
 #include "shared_mutex.h"
 
 #define	N_BUCKETS	4
+ema::shared_mutex<N_BUCKETS> sm;
 
-namespace microbench {
-	struct clocks {
-		double	real,
-			user,
-			sys;
 
-		clocks() : real(.0), user(.0), sys(.0) {
-		}
-	};
+static void Read(int x, int y) {
+    ema::s_lock<N_BUCKETS> l_(sm);
+    std::cout << "read thread first x: " <<  x << " second y: " << y << std::endl;
+}
 
-	class proc_timer {
-		clocks&		c_;
-		struct rusage	s_;
-		struct timeval	st_;
-	public:
-		proc_timer(clocks& c) : c_(c) {
-			if(gettimeofday(&st_, NULL)) throw std::runtime_error("gettimeofday error");
-			if(getrusage(RUSAGE_SELF, &s_)) throw std::runtime_error("getrusage error");
-		}
+static void Write(int& x, int& y) {
+    ema::x_lock<N_BUCKETS> l_(sm);
+    ++x;
+    y = y + 2; 
+    std::cout << "write thread first x: " <<  x << " second y: " << y << std::endl;
+}
 
-		~proc_timer() {
-			struct rusage	e;
-			struct timeval	et;
-			if(gettimeofday(&et, NULL)) throw std::runtime_error("gettimeofday error");
-			if(getrusage(RUSAGE_SELF, &e)) throw std::runtime_error("getrusage error");
-			
-			auto	f_tv2d = [](const timeval& t, const timeval& f) -> double { return 1.0*(t.tv_sec-f.tv_sec)+1e-6*(t.tv_usec-f.tv_usec); };
-			const double	real = f_tv2d(et, st_),
-					user = f_tv2d(e.ru_utime, s_.ru_utime),
-					sys = f_tv2d(e.ru_stime, s_.ru_stime);
-			c_.real += real;
-			c_.user += user;
-			c_.sys += sys;
-		}
-	};
+class Math {
+public:
+    static double random() {
+        static std::random_device rd;
+        static std::default_random_engine engine(rd());
+        static std::uniform_real_distribution<> distribution(0.0, 1.0);
+        return distribution(engine); 
+    }
+};
 
-	void RW_test(const std::string& label, std::function<void(void)> w_func, std::function<void(void)> r_func, const size_t n_threads, const size_t n_iters, const size_t w_freq, const size_t n_writers) {
-		clocks		c;
-		{
-			proc_timer	_pt(c);
-			// test
-			std::list<std::thread>	th_list;
-			for(size_t i = 0; i < n_threads; ++i) {
-				th_list.push_back(
-					std::thread( [&](const bool writer) -> void {
-						for(size_t j = 0; j < n_iters; ++j) {
-							if(writer && ((j%w_freq) == 0)){
-								w_func();
-							} else {
-								r_func();
-							}
-						}
-					},
-					i < n_writers
-					)
-				);
-			}
-			// wait for threads
-			for(auto& i : th_list)
-				i.join();
-		}
-		// some stats...
-		std::printf("%6.2f,%6.2f,%6.2f,%24s\t(%lu,%lu,%lu,%lu)\n", c.real, c.user, c.sys, label.c_str(), n_threads, n_iters, w_freq, n_writers);
-	}
+static int RandomVal(int val) {
+    return (int)(Math::random() * val) + 1;
+}
+
+
+static void readFunc() {
+    ema::s_lock<N_BUCKETS> l_(sm);
+    std::cout << "Read Thread " << std::this_thread::get_id() << " is running" 
+            << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(RandomVal(100)));
+}
+
+static void writeFunc() {
+    ema::x_lock<N_BUCKETS> l_(sm);
+    std::cout << "Write Thread " << std::this_thread::get_id() << " is running" 
+        << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(RandomVal(200)));
+}
+
+void Test() {
+    std::vector<std::thread> threads;
+    int n_thead = 100;
+    int i = 0;
+    int x = 0, y = 0;
+
+    for (int i = 0; i < n_thead; ++i) {
+        if (Math::random() < 0.8) {
+            // threads.emplace_back(readFunc);
+            threads.emplace_back(std::thread(Read, x, y));
+        } else {
+            // threads.emplace_back(writeFunc);
+            threads.emplace_back(std::thread(Write, std::ref(x), std::ref(y)));
+        }
+    }
+
+    for (int i = 0; i < threads.size(); ++i) {
+        threads[i].join();
+    }
 }
 
 int main(int argc, char *argv[]) {
-	try {
-		ema::shared_mutex<N_BUCKETS>	sm;
-		std::mutex			mtx;
-		//
-		size_t a = 0, b = 0;
-
-		// increase frequency of writing
-		size_t w_freq_arr[] = {1024, 512, 256, 128, 16, 4};
-		std::printf("%6s,%6s,%6s,%24s\n", "real", "user", "sys", "mutex_type");
-		for(size_t i = 0; i < sizeof(w_freq_arr)/sizeof(size_t); ++i) {
-			microbench::RW_test(
-				"ema::shared_mutex",
-				[&]() { ema::x_lock<N_BUCKETS> l_(sm); ++a; ++b; },
-				[&]() { ema::s_lock<N_BUCKETS> l_(sm); if(a != b) throw std::runtime_error("Fail in test!"); },
-				N_BUCKETS,
-				32*1024*1024,
-				w_freq_arr[i],
-				N_BUCKETS
-			);
-			microbench::RW_test(
-				"std::mutex",
-				[&]() { std::lock_guard<std::mutex> l_(mtx); ++a; ++b; },
-				[&]() { std::lock_guard<std::mutex> l_(mtx); if(a != b) throw std::runtime_error("Fail in test!"); },
-				N_BUCKETS,
-				32*1024*1024,
-				w_freq_arr[i],
-				N_BUCKETS
-			);
-		}
-	} catch(const std::exception& e) {
-		std::cerr << "Exception: " << e.what() << std::endl;
-	} catch(...) {
-		std::cerr << "Unknown exception" << std::endl;
-	}
+    Test();
 }
 
