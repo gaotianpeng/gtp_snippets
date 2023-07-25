@@ -12,11 +12,9 @@ void printhelp(char progname[]) {
 }
 
 /*
-    ┌─[gtp@VM-24-8-centos] - [~/work/Linux-System-Programming-Techniques/ch1] - [2175]
-    └─[$] ./new-sum -m 4 3 2                                                                                                          [11:13:46]
+    ./new-sum -m 4 3 2                                                                                                          [11:13:46]
     Total: 24
-    ┌─[gtp@VM-24-8-centos] - [~/work/Linux-System-Programming-Techniques/ch1] - [2176]
-    └─[$] ./new-sum -s 4 3 2                                                                                                          [11:13:54]
+    ./new-sum -s 4 3 2                                                                                                          [11:13:54]
     Total: 9
  */
 int main(int argc, char* argv[]) {
