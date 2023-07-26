@@ -11,6 +11,10 @@
         libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fd9f6e53000)
         /lib64/ld-linux-x86-64.so.2 (0x00007fd9f708d000)
 
+
+    建议编译选项: 开启所有类型警告、扩展语法警告、pedantic检查
+    gcc -Wall -Wextra -pedantic -std=c89
+
  */
 int main(int argc, char* argv[]) {
     long int num;
